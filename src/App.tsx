@@ -25,12 +25,6 @@ const SushiModal = () => {
         // start();
       }
     } else {
-      // TODO: ストップとフィニッシュにはそれぞれ別のステートを設けたい
-      if (count >= 10) {
-        console.log('finish');
-        setPlaying(false);
-        // stop();
-      }
       if ('Escape' === event.key) {
         console.log('stop');
         setPlaying(false);
@@ -38,6 +32,11 @@ const SushiModal = () => {
       }
       if (pos < len - 1) {
         if (TEXT[pos] === event.key) {
+          if (count === 9 && pos === len - 2) {
+            // finish
+            setPlaying(false);
+            setCount(c => c + 1);
+          }
           setPos(p => p + 1);
         }
       } else if (TEXT[len-1] === event.key) { // 最後の1文字
@@ -52,7 +51,7 @@ const SushiModal = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [pos, count, playing]);
 
-  console.log('render');
+
   return (
     <Box>
       {playing ? 'プレイちゅう' : 'すとっぷ'}<br />
@@ -111,7 +110,6 @@ const MarkCurrentText = ({
 
   useEffect(() => {
     setChars([]);
-    console.log(chars)
     for (let i = 0; i < text.length; i++) {
       const char = i === pos ? <strong key={i}>{text[i]}</strong> : <span key={i}>{text[i]}</span>;
       setChars(chars => [...chars, char]);
@@ -120,7 +118,6 @@ const MarkCurrentText = ({
 
   return (
     <Box fontSize="1.6rem">
-      {console.log(chars)}
       {chars.map(c => c)}
     </Box>
   );
