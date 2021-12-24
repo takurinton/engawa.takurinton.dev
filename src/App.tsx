@@ -1,4 +1,5 @@
-import { Box } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react";
+import { chakra } from "@chakra-ui/system";
 import { useCallback, useEffect, useState } from "react";
 
 export const App = () => {
@@ -15,8 +16,6 @@ const SushiModal = () => {
   const [count, setCount] = useState(0);
   const [pos, setPos] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [timerId, setTimerId] = useState(null as any);
-  const [time, setTime] = useState(0);
 
   const handleKeyDown = useCallback((event) => {
     if (!playing) {
@@ -49,6 +48,38 @@ const SushiModal = () => {
   }, [pos, count, playing]);
 
   useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [pos, count, playing]);
+
+  console.log('render');
+  return (
+    <Box>
+      {playing ? 'プレイちゅう' : 'すとっぷ'}<br />
+      <MarkCurrentText text={TEXT} pos={pos} />
+      <Counter count={count} />
+      <Timer playing={playing} />
+    </Box>
+  );
+}
+
+const Counter = ({
+  count,
+}: {
+  count: number;
+}) => {
+  return <chakra.p>{count}</chakra.p>
+}
+
+const Timer = ({
+  playing,
+}: {
+  playing: boolean;
+}) => {
+  const [timerId, setTimerId] = useState(null as any);
+  const [time, setTime] = useState(0);
+
+  useEffect(() => {
     if (playing) {
       clearInterval(timerId);
       let timer = setInterval(() => {
@@ -57,25 +88,40 @@ const SushiModal = () => {
       setTimerId(timer);
     } else {
       clearInterval(timerId);
-      // setTime(0);
-      // setCount(0);
-      // setPos(0);
     }
 
     return () => clearInterval(timerId);
-  }, [playing])
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [pos, count, playing]);
+  }, [playing]);
 
   return (
     <Box>
-      {playing ? 'プレイちゅう' : 'すとっぷ'}<br />
-      {pos}<br />
-      {count}<br />
       {`${time/1000}${(time / 1000) % 1 === 0 ? '.0' : ''}`}
     </Box>
-  )
+  );
+}
+
+const MarkCurrentText = ({
+  text, 
+  pos,
+}: { 
+  text: string;
+  pos: number;
+}) => {
+  const [chars, setChars] = useState<JSX.Element[]>([]);
+
+  useEffect(() => {
+    setChars([]);
+    console.log(chars)
+    for (let i = 0; i < text.length; i++) {
+      const char = i === pos ? <strong key={i}>{text[i]}</strong> : <span key={i}>{text[i]}</span>;
+      setChars(chars => [...chars, char]);
+    }
+  }, [pos]);
+
+  return (
+    <Box fontSize="1.6rem">
+      {console.log(chars)}
+      {chars.map(c => c)}
+    </Box>
+  );
 }
