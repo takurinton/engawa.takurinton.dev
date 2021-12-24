@@ -14,28 +14,65 @@ const SushiModal = () => {
   const len = TEXT.length;
   const [count, setCount] = useState(0);
   const [pos, setPos] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [timerId, setTimerId] = useState(null as any);
+  const [time, setTime] = useState(0);
 
   const handleKeyDown = useCallback((event) => {
-    if (pos < len - 1) {
-      // なんか処理入れるかも
-      if (TEXT[pos] === event.key) {
-        setPos(p => p + 1);
+    if (!playing) {
+      if ('Enter' === event.key) {
+        console.log('start play');
+        setPlaying(true);
+        start();
       }
-    } else if (TEXT[len-1] === event.key) { // 最後の1文字
-      setPos(0);
-      setCount(c => c + 1);
+    } else {
+      // TODO: ストップとフィニッシュにはそれぞれ別のステートを設けたい
+      if (count >= 10) {
+        console.log('finish');
+        setPlaying(false);
+        stop();
+      }
+      if ('Escape' === event.key) {
+        console.log('stop');
+        setPlaying(false);
+        stop();
+      }
+      if (pos < len - 1) {
+        if (TEXT[pos] === event.key) {
+          setPos(p => p + 1);
+        }
+      } else if (TEXT[len-1] === event.key) { // 最後の1文字
+        setPos(0);
+        setCount(c => c + 1);
+      }
     }
-  }, [pos]);
+  }, [pos, count, playing]);
+
+  const start = () => {
+    clearInterval(timerId);
+    let timer = setInterval(() => {
+      setTime(t => t + 100);
+    }, 100);
+    setTimerId(timer);
+  }
+
+  const stop = () => {
+    clearInterval(timerId);
+    setTimerId(null);
+    setTime(0);
+  }
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [pos]);
+  }, [pos, count, playing, time]);
 
   return (
     <Box>
+      {playing ? 'プレイちゅう' : 'すとっぷ'}<br />
       {pos}<br />
-      {count}
+      {count}<br />
+      {`${time/1000}${(time / 1000) % 1 === 0 ? '.0' : ''}`}
     </Box>
   )
 }
