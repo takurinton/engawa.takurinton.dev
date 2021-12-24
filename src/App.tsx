@@ -11,13 +11,19 @@ export const App = () => {
 
 const SushiModal = () => {
   const TEXT = 'takurinton';
+  const len = TEXT.length;
   const [count, setCount] = useState(0);
   const [pos, setPos] = useState(0);
-  const [inputValueList, setInputValueList] = useState<string[]>([]);
 
   const handleKeyDown = useCallback((event) => {
-    if (TEXT[pos] === event.key) {
-      setPos(p => p + 1);
+    if (pos < len - 1) {
+      // なんか処理入れるかも
+      if (TEXT[pos] === event.key) {
+        setPos(p => p + 1);
+      }
+    } else if (TEXT[len-1] === event.key) { // 最後の1文字
+      setPos(0);
+      setCount(c => c + 1);
     }
   }, [pos]);
 
@@ -29,6 +35,7 @@ const SushiModal = () => {
   return (
     <Box>
       {pos}<br />
+      {count}
     </Box>
   )
 }
