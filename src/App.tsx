@@ -23,14 +23,14 @@ const SushiModal = () => {
       if ('Enter' === event.key) {
         console.log('start play');
         setPlaying(true);
-        start();
+        // start();
       }
     } else {
       // TODO: ストップとフィニッシュにはそれぞれ別のステートを設けたい
       if (count >= 10) {
         console.log('finish');
         setPlaying(false);
-        stop();
+        // stop();
       }
       if ('Escape' === event.key) {
         console.log('stop');
@@ -48,24 +48,27 @@ const SushiModal = () => {
     }
   }, [pos, count, playing]);
 
-  const start = () => {
-    clearInterval(timerId);
-    let timer = setInterval(() => {
-      setTime(t => t + 100);
-    }, 100);
-    setTimerId(timer);
-  }
+  useEffect(() => {
+    if (playing) {
+      clearInterval(timerId);
+      let timer = setInterval(() => {
+        setTime(t => t + 100);
+      }, 100);
+      setTimerId(timer);
+    } else {
+      clearInterval(timerId);
+      // setTime(0);
+      // setCount(0);
+      // setPos(0);
+    }
 
-  const stop = () => {
-    clearInterval(timerId);
-    setTimerId(null);
-    setTime(0);
-  }
+    return () => clearInterval(timerId);
+  }, [playing])
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [pos, count, playing, time]);
+  }, [pos, count, playing]);
 
   return (
     <Box>
