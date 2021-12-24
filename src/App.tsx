@@ -16,19 +16,25 @@ const SushiModal = () => {
   const [count, setCount] = useState(0);
   const [pos, setPos] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [reset, setReset] = useState(false);
 
   const handleKeyDown = useCallback((event) => {
     if (!playing) {
       if ('Enter' === event.key) {
         console.log('start play');
+        setReset(false);
         setPlaying(true);
-        // start();
+      }
+      if ('Escape' === event.key) {
+        console.log('reset');
+        setCount(0);
+        setPos(0);
+        setReset(true);
       }
     } else {
       if ('Escape' === event.key) {
         console.log('stop');
         setPlaying(false);
-        stop();
       }
       if (pos < len - 1) {
         if (TEXT[pos] === event.key) {
@@ -57,7 +63,7 @@ const SushiModal = () => {
       {playing ? 'プレイちゅう' : 'すとっぷ'}<br />
       <MarkCurrentText text={TEXT} pos={pos} />
       <Counter count={count} />
-      <Timer playing={playing} />
+      <Timer playing={playing} reset={reset} />
     </Box>
   );
 }
@@ -72,8 +78,10 @@ const Counter = ({
 
 const Timer = ({
   playing,
+  reset,
 }: {
   playing: boolean;
+  reset: boolean;
 }) => {
   const [timerId, setTimerId] = useState(null as any);
   const [time, setTime] = useState(0);
@@ -91,6 +99,10 @@ const Timer = ({
 
     return () => clearInterval(timerId);
   }, [playing]);
+
+  useEffect(() => {
+    if (reset) setTime(0);
+  }, [reset]);
 
   return (
     <Box>
