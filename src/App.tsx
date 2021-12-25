@@ -39,7 +39,7 @@ const SushiModal = () => {
     } else {
       if ('Escape' === event.key) {
         console.log('stop');
-        setState('stop');
+        setState('ready');
       }
       if (pos < len - 1) {
         if (TEXT[pos] === event.key) {
