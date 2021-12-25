@@ -10,37 +10,42 @@ export const App = () => {
   )
 }
 
+type GameState = 'ready' | 'playing' | 'finish' | 'stop';
+
 const SushiModal = () => {
   const TEXT = 'takurinton';
   const len = TEXT.length;
   const [count, setCount] = useState(0);
   const [pos, setPos] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const [state, setState] = useState<GameState>('ready');
   const [reset, setReset] = useState(false);
+  const [finishTime, setFinishTime] = useState(0);
 
   const handleKeyDown = useCallback((event) => {
-    if (!playing) {
+    if (state === 'ready') {
       if ('Enter' === event.key) {
         console.log('start play');
         setReset(false);
-        setPlaying(true);
+        setState('playing');
       }
+    } else if (state === 'finish') {
       if ('Escape' === event.key) {
         console.log('reset');
         setCount(0);
         setPos(0);
         setReset(true);
+        setState('ready');
       }
     } else {
       if ('Escape' === event.key) {
         console.log('stop');
-        setPlaying(false);
+        setState('stop');
       }
       if (pos < len - 1) {
         if (TEXT[pos] === event.key) {
-          if (count === 9 && pos === len - 2) {
+          if (count === 2 && pos === len - 2) { // 9
             // finish
-            setPlaying(false);
+            setState('finish');
             setCount(c => c + 1);
           }
           setPos(p => p + 1);
@@ -50,22 +55,70 @@ const SushiModal = () => {
         setCount(c => c + 1);
       }
     }
-  }, [pos, count, playing]);
+  }, [pos, count, state]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [pos, count, playing]);
+  }, [pos, count, state]);
 
+  switch (state) {
+    case 'ready':
+      return <Ready />;
+    case 'playing':
+      return <Playing pos={pos} count={count} reset={reset} state={state} text={TEXT} getFinishTime={setFinishTime} />;
+    case 'finish':
+      return <Finish finishTime={finishTime} />;
+    default:
+      return <Box>検知できないステート</Box>
+  }
+}
 
+const Playing = ({
+  pos,
+  count,
+  reset,
+  state,
+  text,
+  getFinishTime,
+}: {
+  pos: number;
+  count: number;
+  reset: boolean;
+  text: string;
+  state: GameState;
+  getFinishTime: (time: number) => void;
+}) => {
   return (
     <Box>
-      {playing ? 'プレイちゅう' : 'すとっぷ'}<br />
-      <MarkCurrentText text={TEXT} pos={pos} />
+      スタート！！
+      <MarkCurrentText text={text} pos={pos} />
       <Counter count={count} />
-      <Timer playing={playing} reset={reset} />
+      <Timer state={state} reset={reset} getFinishTime={getFinishTime} />
     </Box>
-  );
+  )
+}
+
+const Ready = () => {
+  return (
+    <Box>
+      <chakra.p>よーい</chakra.p>
+      <chakra.p>（Enterを押してスタート）</chakra.p>
+    </Box>
+  )
+}
+
+const Finish = ({
+  finishTime
+}: {
+  finishTime: number;
+}) => {
+  return (
+    <Box>
+      <chakra.p>終了！</chakra.p>
+      <chakra.p>結果: {`${finishTime/1000}${(finishTime / 1000) % 1 === 0 ? '.0' : ''}`}秒</chakra.p>
+    </Box>
+  )
 }
 
 const Counter = ({
@@ -77,17 +130,19 @@ const Counter = ({
 }
 
 const Timer = ({
-  playing,
+  state,
   reset,
+  getFinishTime,
 }: {
-  playing: boolean;
+  state: GameState;
   reset: boolean;
+  getFinishTime: (time: number) => void;
 }) => {
   const [timerId, setTimerId] = useState(null as any);
   const [time, setTime] = useState(0);
 
   useEffect(() => {
-    if (playing) {
+    if (state === 'playing') {
       clearInterval(timerId);
       let timer = setInterval(() => {
         setTime(t => t + 100);
@@ -98,7 +153,11 @@ const Timer = ({
     }
 
     return () => clearInterval(timerId);
-  }, [playing]);
+  }, [state]);
+
+  useEffect(() => {
+    getFinishTime(time);
+  }, [time]);
 
   useEffect(() => {
     if (reset) setTime(0);
@@ -106,7 +165,7 @@ const Timer = ({
 
   return (
     <Box>
-      {`${time/1000}${(time / 1000) % 1 === 0 ? '.0' : ''}`}
+      {`${time/1000}${(time / 1000) % 1 === 0 ? '.0' : ''}`}秒
     </Box>
   );
 }
