@@ -143,7 +143,7 @@ const Ready = () => {
                 自動で入力したプログラムは不正とみなします！
                 <UnorderedList>
                   <ListItem>不正かどうかの基準は、一旦記録が5秒以内かで判断します。そのうち変えるかもしれません。</ListItem>
-                  <ListItem>人力で5秒以内を達成した人は <a href="https://twitter.com/takurinton" style={{ color: '#ff69b4' }}>@takurinton</a> まで連絡をください。称賛します。</ListItem>
+                  <ListItem>人力で5秒以内を達成した人は <a href="https://twitter.com/takurinton" target="_blank" style={{ color: '#ff69b4' }}>@takurinton</a> まで連絡をください。称賛します。</ListItem>
                 </UnorderedList>
               </ListItem>
             </UnorderedList>
