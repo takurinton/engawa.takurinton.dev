@@ -45,13 +45,11 @@ const Sushi = () => {
   const handleKeyDown = useCallback((event) => {
     if (state === 'ready') {
       if ('Enter' === event.key) {
-        console.log('start play');
         setReset(false);
         setState('playing');
       }
     } else if (state === 'finish') {
       if ('Escape' === event.key) {
-        console.log('reset');
         setCount(0);
         setPos(0);
         setReset(true);
@@ -59,12 +57,14 @@ const Sushi = () => {
       }
     } else {
       if ('Escape' === event.key) {
-        console.log('stop');
+        setCount(0);
+        setPos(0);
+        setReset(true);
         setState('ready');
       }
       if (pos < len - 1) {
         if (TEXT[pos] === event.key) {
-          if (count === 2 && pos === len - 2) { // 9
+          if (count === 9 && pos === len - 2) { // 9
             // finish
             setState('finish');
             setCount(c => c + 1);
