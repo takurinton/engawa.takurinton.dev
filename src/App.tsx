@@ -12,6 +12,7 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { chakra } from "@chakra-ui/system";
+import { FaTwitter } from 'react-icons/fa';
 import { useCallback, useEffect, useState } from "react";
 
 export const App = () => {
@@ -166,7 +167,7 @@ const Finish = ({
     <Box>
       <chakra.p>終了！</chakra.p>
       <chakra.p>結果: {`${finishTime/1000}${(finishTime / 1000) % 1 === 0 ? '.0' : ''}`}秒</chakra.p>
-      <Button colorScheme="twitter" m="10px"><a target="_blank" rel="noopener" href="https://twitter.com/?share=">tweet</a></Button>
+      <Button colorScheme="twitter" m="10px" leftIcon={<FaTwitter />}><a target="_blank" rel="noopener" href={`https://twitter.com/intent/tweet?hashtags=takurinton_fast_typing&original_referer=https://engawa.takurinton.dev&ref_src=https://engawa.takurinton.dev&text=takurinton早打ちチャレンジで${finishTime/1000}${(finishTime / 1000) % 1 === 0 ? '.0' : ''}秒を記録しました！${JSON.stringify(100/(finishTime/1000)).slice(0, 5)}/秒のタイピングスピードです！&url=https://engawa.takurinton.dev&via=takurinton`}>tweet</a></Button>
       <chakra.p>Esc を押して再チャレンジ！</chakra.p>
     </Box>
   )
