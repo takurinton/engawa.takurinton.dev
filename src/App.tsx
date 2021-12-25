@@ -1,18 +1,39 @@
-import { Box } from "@chakra-ui/react";
+import { 
+  Box, 
+  Button,
+  UnorderedList,
+  ListItem,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalOverlay,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 import { chakra } from "@chakra-ui/system";
 import { useCallback, useEffect, useState } from "react";
 
 export const App = () => {
   return (
-    <Box>
-      <SushiModal />
+    <Box
+      m="10% auto"
+      p="50px"
+      h="300px"
+      w="50%"
+      textAlign="center"
+      backgroundColor="white"
+      borderRadius="20px"
+      boxShadow="2px 2px 4px"
+    >
+      <Sushi />
     </Box>
   )
 }
 
 type GameState = 'ready' | 'playing' | 'finish' | 'stop';
 
-const SushiModal = () => {
+const Sushi = () => {
   const TEXT = 'takurinton';
   const len = TEXT.length;
   const [count, setCount] = useState(0);
@@ -100,10 +121,38 @@ const Playing = ({
 }
 
 const Ready = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Box>
+    <Box h="100%">
       <chakra.p>よーい</chakra.p>
       <chakra.p>（Enterを押してスタート）</chakra.p>
+
+      <Button onClick={onOpen} m="30px 0">あそびかた</Button>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+        <ModalHeader>あそびかた</ModalHeader>
+        <ModalCloseButton />
+        
+          <Box textAlign="left" w="60%" m="20px auto">
+            <UnorderedList>
+              <ListItem>Enterを押すとゲームが始まります</ListItem>
+              <ListItem>`takurinton` を<strong>10回</strong>入力する速さを競うゲームです</ListItem>
+              <ListItem>ゲームの途中、または終了後にEscキーを押すと最初に戻ります、何度でも挑戦することができます。</ListItem>
+              <ListItem>
+                自動で入力したプログラムは不正とみなします！
+                <UnorderedList>
+                  <ListItem>不正かどうかの基準は、一旦記録が5秒以内かで判断します。そのうち変えるかもしれません。</ListItem>
+                  <ListItem>人力で5秒以内を達成した人は <a href="https://twitter.com/takurinton" style={{ color: '#ff69b4' }}>@takurinton</a> まで連絡をください。称賛します。</ListItem>
+                </UnorderedList>
+              </ListItem>
+            </UnorderedList>
+          </Box>
+          <ModalFooter>
+            <Button onClick={onClose}>閉じる</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   )
 }
@@ -117,6 +166,8 @@ const Finish = ({
     <Box>
       <chakra.p>終了！</chakra.p>
       <chakra.p>結果: {`${finishTime/1000}${(finishTime / 1000) % 1 === 0 ? '.0' : ''}`}秒</chakra.p>
+      <Button colorScheme="twitter" m="10px"><a target="_blank" rel="noopener" href="https://twitter.com/?share=">tweet</a></Button>
+      <chakra.p>Esc を押して再チャレンジ！</chakra.p>
     </Box>
   )
 }
@@ -126,7 +177,7 @@ const Counter = ({
 }: {
   count: number;
 }) => {
-  return <chakra.p>{count}</chakra.p>
+  return <chakra.p>{count}回</chakra.p>
 }
 
 const Timer = ({
@@ -182,13 +233,13 @@ const MarkCurrentText = ({
   useEffect(() => {
     setChars([]);
     for (let i = 0; i < text.length; i++) {
-      const char = i === pos ? <strong key={i}>{text[i]}</strong> : <span key={i}>{text[i]}</span>;
+      const char = i === pos ? <strong key={i} style={{ fontSize: '2rem'}}>{text[i]}</strong> : <span key={i} style={{ fontSize: '1.6rem'}}>{text[i]}</span>;
       setChars(chars => [...chars, char]);
     }
   }, [pos]);
 
   return (
-    <Box fontSize="1.6rem">
+    <Box>
       {chars.map(c => c)}
     </Box>
   );
